@@ -1,28 +1,100 @@
 <script setup>
 import { ref } from "vue";
+import axios from 'axios';
+import { useRouter } from 'vue-router';
 
 const username = ref('');
 const password = ref('');
+const errors = ref({
+  username: "",
+  password: ""
+});
 
-const login = async () => {
-    console.log(`${username.value} ${password.value}`);
-}
+const router = useRouter();
+
+const validateUsername = () => {
+  errors.value.username = username.value.length >= 5 ? "" : "Username must be at least 5 characters.";
+};
+
+const validatePassword = () => {
+  const minLength = 5;
+  const hasUppercase = /[A-Z]/.test(password.value);
+  const hasLowercase = /[a-z]/.test(password.value);
+  const hasNumber = /\d/.test(password.value);
+  const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password.value);
+
+  if (
+    password.value.length >= minLength &&
+    hasUppercase &&
+    hasLowercase &&
+    hasNumber &&
+    hasSpecialChar
+  ) {
+    errors.value.password = "";
+  } else {
+    errors.value.password = "Password must meet the following criteria:\n" +
+      `- At least ${minLength} characters long\n` +
+      `- Contains at least one uppercase letter\n` +
+      `- Contains at least one lowercase letter\n` +
+      `- Contains at least one number\n` +
+      `- Contains at least one special character (!@#$%^&*()_+{}[]:;<>,.?~\\/-)`;
+  }
+};
+
+const submitForm = () => {
+  validateUsername();
+  validatePassword();
+
+  // Check for any error and return false if there is one
+  if (!errors.value.username && !errors.value.password) {
+    // Submit the form data to the server
+    sendFormData();
+  }
+};
+
+const sendFormData = () => {
+  console.log('Form data before submission:', {
+    username: username.value,
+    password: password.value
+  });
+
+  //using axios to send the post to the backend
+  axios.post('http://localhost:3000/api/login', {
+    username: username.value,
+    password: password.value
+  })
+  .then(response => {
+    console.log('Form submitted successfully:', response.data);
+    alert("Login Successful!");
+    router.push('dashboard');
+  })
+  .catch(error => {
+    console.error('Error submitting form:', error.response.data);
+    alert("An Error Occurred! Please try again later.");
+  });
+};
+
 </script>
+
+
+
 <template>
 <div class="container">
-    <form @submit.prevent="login">
+    <form @submit.prevent="submitForm">
         <h1>Login</h1>
-        <input type="text" v-model="username"  placeholder="Username">
-        <input type="password" v-model="password" placeholder="Password">
+        <input type="text" v-model="username"  placeholder="Username" @input="validateusername">
+        <p class="errors" v-if="errors.username">{{ errors.username }}</p>
+        <input type="password" v-model="password" placeholder="Password" @input="validatepassword">
+        <p class="errors" v-if="errors.password">{{ errors.password }}</p>
         <p>
             <Router-link to="/forgot">Forgot Password</Router-link>
         </p>
         
-        <button type="submit">Submit</button>
+        <button type="submit" v-if="!errors.username && !errors.password">Submit</button>
         <br><br>
         <div class="hr">
             <hr>
-            <span>Dont' have an account yet?</span>
+            <span>Don't have an account yet?</span>
             <hr>
         </div>
         <br>
@@ -31,11 +103,15 @@ const login = async () => {
 </div>
 </template>
 
+
 <script>
+import axios from 'axios';
+import { useRouter } from 'vue-router';
+
+
 export default{
     name: 'LoginView',
 }
-
 </script>
 
 <style scoped>
@@ -43,6 +119,9 @@ export default{
     display: flex;
     align-items: center;
     width: 100%;
+  }
+  .errors{
+    color: red;
   }
 
   .hr hr {

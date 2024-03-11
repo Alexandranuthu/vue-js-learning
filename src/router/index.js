@@ -31,6 +31,12 @@ const router = createRouter({
       path: '/Forgot',
       name: 'Forgot',
       component: () => import('../components/Forgot.vue')
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import('../components/Dashboard.vue'),
+      
     }
   ]
 })
