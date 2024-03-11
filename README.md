@@ -1,35 +1,18 @@
-# example_app
+## VUE JS AUTHENTICATION SYSTEM
 
-This template should help get you started developing with Vue 3 in Vite.
+## DESCRIPTION :
+The Vue Authentication System is a web application designed to provide user authentication features, including signup, login, and password recovery functionalities.
+## NAV
+![alt text](image.png)
+## SIGN UP
+![alt text](image-1.png)
+## VALIDATION 
+![alt text](image-4.png)
 
-## Recommended IDE Setup
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+## TECHNOLOGIES USED: 
+    Vue.js: Frontend framework for building interactive user interfaces and managing application state.
+    Vue Router: Library for managing application routes and navigation between different pages.
+    Axios: HTTP client for making asynchronous requests to the backend server.
+    Node.js/Express.js: Backend framework for building the server-side logic and APIs.
+    Mysql: database for storing user data securely.

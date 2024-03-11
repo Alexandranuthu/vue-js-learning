@@ -2,34 +2,40 @@
 <script setup>
 import { ref } from "vue";
 
-
+// Variables to store user input data
 const firstname = ref('');
 const lastname = ref('');
 const username = ref('');
+const email = ref('');
 const password = ref('');
-
+// Function to handle user signup process
 const signup = async () => {
-    console.log(`${firstname.value} ${lastname.value} ${username.value} ${password.value}`);
+  // Log user input data for debugging or future reference
+    console.log(`${firstname.value} ${lastname.value} ${username.value} ${email.value} ${password.value}`);
 }
 </script>
 
 <template>
     <div class="container">
-        <form @submit.prevent="signup">
+        <form @submit.prevent="submitForm" action="post" method="POST">
             <h1>Register Form</h1>
-            <input type="text" id="firstname" placeholder="Firstname" v-model="firstname" @input="validatefirstname">
+            <input type="text" id="firstname" placeholder="Firstname" v-model="firstname"  @input="validatefirstname; errors.firstname = ''">
             <p class="errors" v-if="errors.firstname">{{ errors.firstname }}</p>
             <br>
-            <input type="text" id="lastname" placeholder="Lastname" v-model="lastname" @input="validatelastname">
+            <input type="text" id="lastname" placeholder="Lastname" v-model="lastname" @input="validatelastname; errors.lastname = ''">
             <p class="errors" v-if="errors.lastname">{{ errors.lastname }}</p>
             <br>
-            <input type="text" id="username" placeholder="Username" v-model="username" @input="validateusername">
+            <input type="text" id="username" placeholder="Username" v-model="username" @input="validateusername; errors.username = ''">
             <p  class="errors" v-if="errors.username">{{ errors.username }}</p>
             <br>
-            <input type="password" id="password" placeholder="Password" v-model="password" @input="validatepassword">
+            <input type="text" id="email" placeholder="Email" v-model="email" @input="validateemail; errors.email = ''">
+            <p  class="errors" v-if="errors.email">{{ errors.email }}</p>
+            <br>
+            <input type="password" id="password" placeholder="Password" v-model="password" @input="validatepassword; errors.password = ''">
             <p class="errors" v-if="errors.password">{{ errors.password }}</p>
             <br>
-            <button type="submit">Submit</button>
+            <button type="submit" @click="sendFormData" v-if="!errors.firstname && !errors.lastname && !errors.username && !errors.email && !errors.password">Submit</button>
+
             <br><br>
             <div class="hr">
             <hr>
@@ -45,6 +51,8 @@ const signup = async () => {
 
 
 <script>
+import axios from 'axios';
+
 export default{
     name: 'SignupView',
     data() {
@@ -52,6 +60,7 @@ export default{
       firstname: "",
       lastname: "",
       username: "",
+      email: "",
       password: "",
       errors: {
         firstname:"",
@@ -71,7 +80,11 @@ export default{
     validateusername() {
       this.errors.username = this.username.length >= 5 ? "" : "Username must be at least 5 characters.";
     },
-    validatePassword() {
+    validateemail() {
+      const regex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
+      this.errors.email = regex.test(this.email) ? "" : "Invalid email address.";
+    },
+    validatepassword() {
   const minLength = 5;
   const hasUppercase = /[A-Z]/.test(this.password);
   const hasLowercase = /[a-z]/.test(this.password);
@@ -101,13 +114,41 @@ export default{
       this.validatefirstname();
       this.validatelastname();
       this.validateusername();
+      this.validateemail();
       this.validatepassword();
       
       // Check for any error and return false if there is one
-      if ( !this.errors.firstname && !this.errors.lastname && !this.errors.username && !this.errors.password) {
+      if ( !this.errors.firstname && !this.errors.lastname && !this.errors.username && !this.errors.email && !this.errors.password) {
         // Submit the form data to the server
-        console.log("Form submitted:", { firstname: this.firstname, lastname: this.lastname, username: this.username, password: this.password });
+        this.sendFormData();
       }
+    },
+    sendFormData() {
+
+      console.log('Form data before submission:', {
+        firstname: firstname.value,
+        lastname: lastname.value,
+        username: username.value,
+        email: email.value,
+        password: password.value
+  });
+      //using axios to send the post to the backend
+      axios.post('http://localhost:3000/api/signup', {
+        firstname: firstname.value,
+        lastname: lastname.value,
+        username: username.value,
+        email: email.value,
+        password: password.value
+      })
+      .then(response => {
+        console.log('Form submitted successfully:', response.data);
+        alert("Registration Successful!");
+       this.$router.push('/login');
+      })
+      .catch(error => {
+        console.error('Error submitting form:', error.response.data);
+        alert("An Error Occurred! Please try again later.");
+      });
     }
   }
 }
