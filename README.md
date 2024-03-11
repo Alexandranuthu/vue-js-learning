@@ -4,10 +4,17 @@
 The Vue Authentication System is a web application designed to provide user authentication features, including signup, login, and password recovery functionalities.
 ## NAV
 ![alt text](image.png)
-## SIGN UP
-![alt text](image-1.png)
+## LOGIN 
+![alt text](image-5.png)
+<!-- ## SIGN UP
+![alt text](image-1.png) -->
 ## VALIDATION 
-![alt text](image-4.png)
+![alt text](image-6.png)
+## forgot password
+![alt text](image-8.png)
+## once logged in you are taken to dashboard
+![alt text](image-7.png)
+
 
 
 ## TECHNOLOGIES USED: 
