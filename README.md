@@ -1,4 +1,7 @@
 ## VUE JS AUTHENTICATION SYSTEM
+
+## DESCRIPTION :
+The Vue Authentication System is a web application designed to provide user authentication features, including signup, login, and password recovery functionalities.
 ## NAV
 ![alt text](image.png)
 ## SIGN UP
@@ -6,8 +9,6 @@
 ## VALIDATION 
 ![alt text](image-4.png)
 
-## DESCRIPTION :
-The Vue Authentication System is a web application designed to provide user authentication features, including signup, login, and password recovery functionalities.
 
 ## TECHNOLOGIES USED: 
     Vue.js: Frontend framework for building interactive user interfaces and managing application state.
