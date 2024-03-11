@@ -1,35 +1,117 @@
-// it has to have three parts
 <script setup>
 import { ref } from "vue";
-
+import axios from 'axios';
 
 const firstname = ref('');
 const lastname = ref('');
 const username = ref('');
+const email = ref('');
 const password = ref('');
+const errors = ref({
+  firstname: "",
+  lastname: "",
+  username: "",
+  email: "",
+  password: ""
+});
 
-const signup = async () => {
-    console.log(`${firstname.value} ${lastname.value} ${username.value} ${password.value}`);
-}
+const validatefirstname = () => {
+  errors.firstname = firstname.value.length >= 5 ? "" : "Firstname must be at least 5 characters.";
+};
+const validatelastname = () => {
+  errors.lastname = lastname.value.length >= 5 ? "" : "Lastname must be at least 5 characters.";
+};
+const validateusername = () => {
+  errors.username = username.value.length >= 5 ? "" : "Username must be at least 5 characters.";
+};
+const validateemail = () => {
+  const regex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
+  errors.email = regex.test(email.value) ? "" : "Invalid email address.";
+};
+const validatepassword = () => {
+  const minLength = 5;
+  const hasUppercase = /[A-Z]/.test(password.value);
+  const hasLowercase = /[a-z]/.test(password.value);
+  const hasNumber = /\d/.test(password.value);
+  const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password.value);
+
+  if (
+    password.value.length >= minLength &&
+    hasUppercase &&
+    hasLowercase &&
+    hasNumber &&
+    hasSpecialChar
+  ) {
+    errors.password = "";
+  } else {
+    errors.password = "Password must meet the following criteria:\n" +
+      `- At least ${minLength} characters long\n` +
+      `- Contains at least one uppercase letter\n` +
+      `- Contains at least one lowercase letter\n` +
+      `- Contains at least one number\n` +
+      `- Contains at least one special character (!@#$%^&*()_+{}[]:;<>,.?~\\/-)`;
+  }
+};
+
+const submitForm = () => {
+  validatefirstname();
+  validatelastname();
+  validateusername();
+  validateemail();
+  validatepassword();
+
+  // Check for any error and return false if there is one
+  if (!errors.firstname && !errors.lastname && !errors.username && !errors.email && !errors.password) {
+    // Submit the form data to the server
+    sendFormData();
+  }
+};
+
+const sendFormData = () => {
+  // Using axios to send the post to the backend
+  axios.post('http://localhost:3000/api/signup', {
+    firstname: firstname.value,
+    lastname: lastname.value,
+    username: username.value,
+    email: email.value,
+    password: password.value
+  })
+  .then(response => {
+    console.log('Form submitted successfully:', response.data);
+    alert("Registration Successful!");
+    this.$router.push('/login');
+  })
+  .catch(error => {
+    console.error('Error submitting form:', error.response.data);
+    alert("An Error Occurred! Please try again later.");
+  });
+};
 </script>
 
 <template>
     <div class="container">
-        <form @submit.prevent="signup">
+        <form @submit.prevent="submitForm" action="post" method="POST">
             <h1>Register Form</h1>
-            <input type="text" id="firstname" placeholder="Firstname" v-model="firstname" @input="validatefirstname">
+            <input type="text" id="firstname" placeholder="Firstname" v-model="firstname">
             <p class="errors" v-if="errors.firstname">{{ errors.firstname }}</p>
             <br>
-            <input type="text" id="lastname" placeholder="Lastname" v-model="lastname" @input="validatelastname">
+            <input type="text" id="lastname" placeholder="Lastname" v-model="lastname" >
             <p class="errors" v-if="errors.lastname">{{ errors.lastname }}</p>
             <br>
-            <input type="text" id="username" placeholder="Username" v-model="username" @input="validateusername">
+            <input type="text" id="username" placeholder="Username" v-model="username" >
             <p  class="errors" v-if="errors.username">{{ errors.username }}</p>
             <br>
-            <input type="password" id="password" placeholder="Password" v-model="password" @input="validatepassword">
-            <p class="errors" v-if="errors.password">{{ errors.password }}</p>
+            <input type="text" id="email" placeholder="Email" v-model="email">
+            <p  class="errors" v-if="errors.email">{{ errors.email }}</p>
             <br>
-            <button type="submit">Submit</button>
+            <input type="password" id="password" placeholder="Password" v-model="password" >
+<p class="errors" v-if="errors.password">{{ errors.password }}</p>
+
+<input type="password" id="confirmPassword" placeholder="Confirm Password" v-model="confirmPassword" >
+<p class="errors" v-if="errors.confirmPassword">{{ errors.confirmPassword }}</p>
+            <br>
+            <button type="submit" v-if="!errors.firstname && !errors.lastname && !errors.username && !errors.email && !errors.password">Submit</button>
+
             <br><br>
             <div class="hr">
             <hr>
@@ -44,75 +126,7 @@ const signup = async () => {
 
 
 
-<script>
-export default{
-    name: 'SignupView',
-    data() {
-    return {
-      firstname: "",
-      lastname: "",
-      username: "",
-      password: "",
-      errors: {
-        firstname:"",
-        lastname:"",
-        username: "",
-        password:""
-      }
-    };
-  },
-  methods: {
-    validatefirstname() {
-      this.errors.firstname = this.firstname.length >= 5 ? "" : "Firstname must be at least 5 characters.";
-    },
-    validatelastname() {
-      this.errors.lastname = this.lastname.length >= 5 ? "" : "Lastname must be at least 5 characters.";
-    },
-    validateusername() {
-      this.errors.username = this.username.length >= 5 ? "" : "Username must be at least 5 characters.";
-    },
-    validatePassword() {
-  const minLength = 5;
-  const hasUppercase = /[A-Z]/.test(this.password);
-  const hasLowercase = /[a-z]/.test(this.password);
-  const hasNumber = /\d/.test(this.password);
-  const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(this.password);
 
-  if (
-    this.password.length >= minLength &&
-    hasUppercase &&
-    hasLowercase &&
-    hasNumber &&
-    hasSpecialChar
-  ) {
-    this.errors.password = "";
-  } else {
-    this.errors.password = "Password must meet the following criteria:\n" +
-      `- At least ${minLength} characters long\n` +
-      `- Contains at least one uppercase letter\n` +
-      `- Contains at least one lowercase letter\n` +
-      `- Contains at least one number\n` +
-      `- Contains at least one special character (!@#$%^&*()_+{}[]:;<>,.?~\\/-)`;
-  }
-},
-
-
-    submitForm() {
-      this.validatefirstname();
-      this.validatelastname();
-      this.validateusername();
-      this.validatepassword();
-      
-      // Check for any error and return false if there is one
-      if ( !this.errors.firstname && !this.errors.lastname && !this.errors.username && !this.errors.password) {
-        // Submit the form data to the server
-        console.log("Form submitted:", { firstname: this.firstname, lastname: this.lastname, username: this.username, password: this.password });
-      }
-    }
-  }
-}
-
-</script>
 
 
 
